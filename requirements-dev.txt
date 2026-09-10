@@ -1,0 +1,4 @@
+# Development extras: test suite and the analysis notebook.
+# Install alongside requirements.txt.
+pytest==9.1.1
+jupyter==1.1.1
