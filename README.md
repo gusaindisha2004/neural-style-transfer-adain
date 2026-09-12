@@ -1,7 +1,7 @@
 # Neural Style Transfer with Adaptive Instance Normalization
 
 A PyTorch implementation of arbitrary neural style transfer, served through a Flask web
-application — any photograph rendered in the style of any image, in a single forward pass,
+application. It renders any photograph in the style of any image, in a single forward pass,
 with no per-style retraining.
 
 ![Content, style and result for two different styles](docs/examples.jpg)
@@ -16,7 +16,7 @@ implements the method from **Huang & Belongie, *Arbitrary Style Transfer in Real
 Adaptive Instance Normalization*, ICCV 2017**, which resolves that trade-off: one trained
 decoder handles unlimited styles because the styling operation itself has no learned parameters.
 
-The repository contains the full pipeline — model definitions, the training script, a
+The repository contains the full pipeline: model definitions, the training script, a
 command-line interface, a Flask web application, a test suite, and an analysis notebook that
 empirically verifies the assumption the method rests on.
 
@@ -26,8 +26,8 @@ Style transfer methods before AdaIN forced a choice between flexibility and spee
 
 | Approach | Arbitrary styles | Speed |
 | --- | --- | --- |
-| Gatys et al. (2015) — per-image optimisation | Yes | Minutes per image |
-| Johnson et al. (2016) — feed-forward, per style | No, one network per style | Milliseconds |
+| Gatys et al. (2015), per-image optimisation | Yes | Minutes per image |
+| Johnson et al. (2016), feed-forward per style | No, one network per style | Milliseconds |
 | **AdaIN (this project)** | **Yes** | **One forward pass** |
 
 The underlying problem is separating *content* from *style* so one can be swapped without
@@ -37,16 +37,16 @@ arrangement.
 
 ## Key features
 
-- **Arbitrary style transfer** — any style image works on the first attempt, including images
+- **Arbitrary style transfer**: any style image works on the first attempt, including images
   never seen during training
-- **Style strength control (α)** — runtime interpolation between the original photograph and
+- **Style strength control (α)**: runtime interpolation between the original photograph and
   the fully stylised result
-- **Two-style blending** — interpolates between two styles in feature space (paper Eq. 15)
-- **Web interface** — upload, preview, adjust, render, download; server-rendered, no build step
-- **Command-line interface** — batch rendering, α sweeps and multi-style blends
-- **Training script** — full training loop implementing the paper's content and style losses
-- **Test suite** — 33 tests covering model invariants, the AdaIN mathematics, and the web layer
-- **Analysis notebook** — measures the content/style separation the method depends on
+- **Two-style blending**: interpolates between two styles in feature space (paper Eq. 15)
+- **Web interface**: upload, preview, adjust, render, download; server-rendered, no build step
+- **Command-line interface**: batch rendering, α sweeps and multi-style blends
+- **Training script**: full training loop implementing the paper's content and style losses
+- **Test suite**: 33 tests covering model invariants, the AdaIN mathematics, and the web layer
+- **Analysis notebook**: measures the content/style separation the method depends on
 
 ### Style strength
 
@@ -91,23 +91,23 @@ arrangement.
 ```
 
 The application is a **stateless single-process Flask server**. Both models are loaded once at
-startup and reused across requests. There is no database and no background job queue — each
+startup and reused across requests. There is no database and no background job queue; each
 request is handled synchronously in one forward pass.
 
 ## Workflow
 
-1. **Upload** — the client posts a content image and one or two style images
-2. **Validate** — the extension is checked against an allow-list, then the file is opened with
+1. **Upload**: the client posts a content image and one or two style images
+2. **Validate**: the extension is checked against an allow-list, then the file is opened with
    Pillow to confirm it is genuinely decodable
-3. **Preprocess** — each image is resized so its shorter side is 512 px, aspect ratio
+3. **Preprocess**: each image is resized so its shorter side is 512 px, aspect ratio
    preserved, and converted to a `[0,1]` tensor
-4. **Encode** — both images pass through the frozen VGG-19 truncated at `relu4_1`; a 512 × 512
+4. **Encode**: both images pass through the frozen VGG-19 truncated at `relu4_1`; a 512 × 512
    input becomes a `512 × 64 × 64` feature map
-5. **Adapt** — AdaIN aligns the content features' per-channel statistics to the style's; with
+5. **Adapt**: AdaIN aligns the content features' per-channel statistics to the style's; with
    two styles, the per-style AdaIN outputs are averaged using the blend weights
-6. **Blend** — `α · adain + (1 − α) · content_features` applies the style-strength control
-7. **Decode** — the trained decoder upsamples ×8 back to image resolution
-8. **Postprocess** — clamped to `[0,1]`, saved as JPEG under a collision-proof filename, and
+6. **Blend**: `α · adain + (1 − α) · content_features` applies the style-strength control
+7. **Decode**: the trained decoder upsamples ×8 back to image resolution
+8. **Postprocess**: clamped to `[0,1]`, saved as JPEG under a collision-proof filename, and
    returned to the page with a download link
 
 ## Technical implementation details
@@ -144,7 +144,7 @@ padding. Two deliberate choices carried over from the paper:
 - **Nearest-neighbour upsampling** rather than transposed convolution, which avoids
   checkerboard artifacts
 - **No normalisation layers.** BatchNorm would pull every output toward one shared style and
-  InstanceNorm toward a single style per sample — both destroy the arbitrary-style property.
+  InstanceNorm toward a single style per sample. Both destroy the arbitrary-style property.
   The test suite asserts their absence.
 
 ### Style interpolation (paper Eq. 15)
@@ -158,18 +158,18 @@ def style_interpolation(content_feat, style_feats, weights):
 ```
 
 Because every AdaIN output shares the same normalised content tensor, averaging the outputs is
-mathematically equivalent to averaging the styles' affine parameters — the content structure
+mathematically equivalent to averaging the styles' affine parameters. The content structure
 factors out and is never disturbed.
 
 ### Training objective
 
 `L = L_content + λ · L_style`
 
-- **Content loss** — MSE between the encoder's `relu4_1` response to the generated image and
+- **Content loss**: MSE between the encoder's `relu4_1` response to the generated image and
   the AdaIN output `t`. The target is `t`, not the content image: the decoder is trained
   specifically to *invert AdaIN*.
-- **Style loss** — MSE between per-channel means and standard deviations of the generated and
-  style images at `relu1_1`, `relu2_1`, `relu3_1` and `relu4_1`. No Gram matrices — since AdaIN
+- **Style loss**: MSE between per-channel means and standard deviations of the generated and
+  style images at `relu1_1`, `relu2_1`, `relu3_1` and `relu4_1`. No Gram matrices: since AdaIN
   transfers only means and variances, the loss measures only those.
 
 ### Input validation
@@ -192,7 +192,7 @@ data is stored.
 | Encoder | VGG-19, pretrained, frozen, truncated at `relu4_1` |
 | Feature space | 512 channels; 64 × 64 spatial grid for a 512 px input |
 | Style representation | Per-channel mean and standard deviation (512 pairs) |
-| Style transfer operation | AdaIN — parameter-free affine statistic transfer |
+| Style transfer operation | AdaIN, a parameter-free affine statistic transfer |
 | Trained component | Decoder only (9 conv layers, 18 weight tensors) |
 | Loss | Perceptual content loss + multi-layer statistic style loss |
 | Optimiser | Adam, lr 1e-4 with inverse-time decay |
@@ -214,7 +214,7 @@ project runs immediately after cloning. The hyperparameters that produced it are
 | Encoder | 77 MB, frozen |
 | Decoder | 13.4 MB, 18 weight tensors |
 
-**Content/style separation** — measured in `code.ipynb` by comparing `relu4_1` feature
+**Content/style separation**: measured in `code.ipynb` by comparing `relu4_1` feature
 statistics between a content photograph, a style image, and the stylised result:
 
 | Pair | Mean distance | Std distance |
@@ -231,16 +231,16 @@ For reference, the original paper reports 0.065 s at 512 px on a Pascal Titan X 
 
 ## Screenshots
 
-**Landing page** — method summary and model configuration
+**Landing page**: method summary and model configuration
 
 ![Landing page](docs/screenshot-landing.png)
 
-**Studio** — three upload slots with live previews, plus the style-blend and style-strength
+**Studio**: three upload slots with live previews, plus the style-blend and style-strength
 controls. The blend control is enabled only once a second style is chosen.
 
 ![Studio](docs/screenshot-studio.png)
 
-**Result** — the rendered output, labelled with the inputs and parameters used to produce it
+**Result**: the rendered output, labelled with the inputs and parameters used to produce it
 
 ![Result](docs/screenshot-result.png)
 
@@ -253,7 +253,7 @@ git clone https://github.com/gusaindisha2004/neural-style-transfer-adain.git
 cd neural-style-transfer-adain
 ```
 
-Create the virtual environment **outside** the project directory on Windows — PyTorch has
+Create the virtual environment **outside** the project directory on Windows. PyTorch has
 deeply nested paths that can exceed the 260-character path limit:
 
 ```bash
@@ -269,7 +269,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Both model checkpoints are included in the repository — no additional downloads are required.
+Both model checkpoints are included in the repository, so no additional downloads are required.
 
 ## Running the project
 
@@ -324,8 +324,8 @@ pytest -v
 python train.py --content_dir path/to/coco --style_dir path/to/paintings --batch_size 16 --epochs 200 --style_weight 10 --experiment my_run
 ```
 
-Running `python train.py` with no arguments uses the small bundled sample folders — enough to
-verify the pipeline executes, not to produce a usable model. Real training requires large
+Running `python train.py` with no arguments uses the small bundled sample folders, which is enough
+to verify the pipeline executes but not to produce a usable model. Real training requires large
 datasets (the paper uses MS-COCO and WikiArt, roughly 80,000 images each) and a GPU.
 
 ## Project structure
@@ -384,26 +384,26 @@ datasets (the paper uses MS-COCO and WikiArt, roughly 80,000 images each) and a 
 
 ## Future scope
 
-- **Colour preservation** — apply style texture while retaining the content image's original
+- **Colour preservation**: apply style texture while retaining the content image's original
   colours (described in the paper, not yet implemented)
-- **Spatial control** — apply different styles to different regions of the same image
-- **Video style transfer** — the paper notes style statistics can be encoded once and reused
+- **Spatial control**: apply different styles to different regions of the same image
+- **Video style transfer**: the paper notes style statistics can be encoded once and reused
   across frames
-- **GPU deployment** — the code is device-agnostic; a CUDA host would reduce inference from
+- **GPU deployment**: the code is device-agnostic; a CUDA host would reduce inference from
   seconds to milliseconds
-- **Asynchronous rendering** — a task queue would allow concurrent users without blocking
+- **Asynchronous rendering**: a task queue would allow concurrent users without blocking
 - **Training a decoder from scratch** on MS-COCO and WikiArt to reproduce the checkpoint
 
 ## References
 
-1. Huang & Belongie — [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (ICCV 2017)
-2. Gatys, Ecker & Bethge — [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576) (2015)
-3. Johnson, Alahi & Fei-Fei — [Perceptual Losses for Real-Time Style Transfer and Super-Resolution](https://arxiv.org/abs/1603.08155) (ECCV 2016)
-4. Simonyan & Zisserman — [Very Deep Convolutional Networks for Large-Scale Image Recognition](https://arxiv.org/abs/1409.1556) (2014)
+1. Huang & Belongie, [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (ICCV 2017)
+2. Gatys, Ecker & Bethge, [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576) (2015)
+3. Johnson, Alahi & Fei-Fei, [Perceptual Losses for Real-Time Style Transfer and Super-Resolution](https://arxiv.org/abs/1603.08155) (ECCV 2016)
+4. Simonyan & Zisserman, [Very Deep Convolutional Networks for Large-Scale Image Recognition](https://arxiv.org/abs/1409.1556) (2014)
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE). The pretrained VGG-19 weights are the "normalised" VGG
+MIT. See [LICENSE](LICENSE). The pretrained VGG-19 weights are the "normalised" VGG
 distributed with the original AdaIN implementation by Xun Huang and are used unmodified. Sample
 content and style images are included for demonstration only and remain the property of their
 respective owners.

@@ -286,7 +286,7 @@ footer a:hover{color:var(--accent)}
       <h1 class="display">Any photograph,<br>in the hand of <em>any</em> painter.</h1>
       <p class="lede">
         A single feed-forward network that repaints a photograph in the style of any
-        image you give it &mdash; including one it has never seen. No retraining, no waiting.
+        image you give it, including one it has never seen. No retraining, no waiting.
       </p>
     </div>
     <div class="hero-meta">
@@ -435,7 +435,7 @@ footer a:hover{color:var(--accent)}
       <div>
         <h2 class="section-title">Gallery</h2>
         <p>Each piece pairs one photograph with one style. Neither style was seen
-           during training &mdash; the network generalises to both.</p>
+           during training, yet the network generalises to both.</p>
       </div>
     </div>
 
@@ -445,7 +445,7 @@ footer a:hover{color:var(--accent)}
           <div class="frame"><img src="{{ url_for('send_example', filename='portrait.jpg') }}" alt="Photograph"></div></div>
         <div><div class="tag">Style</div>
           <div class="frame"><img src="{{ url_for('send_example', filename='pencil_sketch.jpg') }}" alt="Pencil sketch style"></div></div>
-        <div class="out"><div class="tag">Result &mdash; Graphite</div>
+        <div class="out"><div class="tag">Result: Graphite</div>
           <div class="frame"><img src="{{ url_for('send_example', filename='stylized_portrait_sketch.jpg') }}" alt="Result in pencil style"></div></div>
       </article>
 
@@ -454,7 +454,7 @@ footer a:hover{color:var(--accent)}
           <div class="frame"><img src="{{ url_for('send_example', filename='portrait.jpg') }}" alt="Photograph"></div></div>
         <div><div class="tag">Style</div>
           <div class="frame"><img src="{{ url_for('send_example', filename='blue_brushstrokes.jpg') }}" alt="Abstract brushstroke style"></div></div>
-        <div class="out"><div class="tag">Result &mdash; Brushstrokes</div>
+        <div class="out"><div class="tag">Result: Brushstrokes</div>
           <div class="frame"><img src="{{ url_for('send_example', filename='stylized_portrait_brushstrokes.jpg') }}" alt="Result in brushstroke style"></div></div>
       </article>
     </div>
@@ -468,7 +468,7 @@ footer a:hover{color:var(--accent)}
       <div>
         <h2 class="section-title">Method</h2>
         <p>Style lives in the statistics of a network's feature maps. Move the statistics,
-           and you move the style &mdash; leaving the structure of the photograph intact.</p>
+           and you move the style, leaving the structure of the photograph intact.</p>
       </div>
     </div>
 
@@ -480,7 +480,7 @@ footer a:hover{color:var(--accent)}
       </div>
       <div class="step">
         <div class="n">2</div><h4>Normalise</h4>
-        <p>Each of the 512 content channels is stripped of its own mean and variance &mdash;
+        <p>Each of the 512 content channels is stripped of its own mean and variance,
            erasing the photograph's style while keeping its layout.</p>
       </div>
       <div class="step">
@@ -491,14 +491,14 @@ footer a:hover{color:var(--accent)}
       <div class="step">
         <div class="n">4</div><h4>Decode</h4>
         <p>A trained decoder inverts the result back into an image. It learned one general
-           skill &mdash; features to pixels &mdash; so any style works.</p>
+           skill, turning features into pixels, so any style works.</p>
       </div>
     </div>
 
     <div class="formula">
       AdaIN(<em>x</em>, <em>y</em>) = &sigma;(<em>y</em>) &middot;
       ( <em>x</em> &minus; &mu;(<em>x</em>) ) / &sigma;(<em>x</em>) + &mu;(<em>y</em>)
-      <small>x &mdash; content features &nbsp;&middot;&nbsp; y &mdash; style features</small>
+      <small>x: content features &nbsp;&middot;&nbsp; y: style features</small>
     </div>
   </div>
 </section>
@@ -511,7 +511,7 @@ footer a:hover{color:var(--accent)}
     </div>
 
     <details><summary>Is this a pretrained model?</summary>
-      <p>The VGG-19 encoder is pretrained and frozen &mdash; it is used only as a fixed feature
+      <p>The VGG-19 encoder is pretrained and frozen. It is used only as a fixed feature
          extractor and never learns. The decoder, which does the actual image generation,
          was trained for this project.</p></details>
 
@@ -531,11 +531,11 @@ footer a:hover{color:var(--accent)}
          them is equivalent to averaging the two styles' statistics.</p></details>
 
     <details><summary>Which images can be used as a style?</summary>
-      <p>Almost anything &mdash; paintings, sketches, photographs, textures. Styles with strong,
+      <p>Almost anything: paintings, sketches, photographs, textures. Styles with strong,
          consistent colour and brushwork tend to read most clearly in the result.</p></details>
 
     <details><summary>What is the tech stack?</summary>
-      <p>Python, PyTorch and Flask. The model is an encoder&ndash;decoder pair with an AdaIN layer
+      <p>Python, PyTorch and Flask. The model is an encoder-decoder pair with an AdaIN layer
          between them; the interface is server-rendered with no build step.</p></details>
   </div>
 </section>
