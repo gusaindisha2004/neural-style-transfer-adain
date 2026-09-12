@@ -219,9 +219,9 @@ statistics between a content photograph, a style image, and the stylised result:
 
 | Pair | Mean distance | Std distance |
 | --- | ---: | ---: |
-| result vs style | 4.77 | 3.36 |
-| result vs content | 12.49 | 10.02 |
-| content vs style | 13.42 | 10.29 |
+| result vs style | 5.48 | 5.13 |
+| result vs content | 14.32 | 11.95 |
+| content vs style | 15.73 | 12.96 |
 
 The result's feature statistics sit far closer to the style image than to the photograph it was
 generated from, while its activation maps remain structurally those of the photograph. This is

@@ -8,8 +8,8 @@ Runs the same inference path as the web app, without Flask:
 
 Examples
 --------
-    python stylize.py --content examples/brad_pitt.jpg --style examples/sketch.png
-    python stylize.py --content examples/brad_pitt.jpg --style style_data/mondrian.jpg \
+    python stylize.py --content examples/portrait.jpg --style examples/pencil_sketch.jpg
+    python stylize.py --content examples/portrait.jpg --style style_data/blue_brushstrokes.jpg \
                       --alpha 0.0 0.25 0.5 0.75 1.0
 """
 import argparse

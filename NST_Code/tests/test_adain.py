@@ -211,8 +211,8 @@ def test_index_loads_without_error_banner(app_client):
 
 def test_render_single_style(app_client):
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
-        'style': (io.BytesIO(image_bytes('sketch.png')), 'sketch.png'),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
+        'style': (io.BytesIO(image_bytes('pencil_sketch.jpg')), 'pencil_sketch.jpg'),
         'alpha': '1.0',
     }, content_type='multipart/form-data')
     body = res.get_data(as_text=True)
@@ -223,9 +223,9 @@ def test_render_single_style(app_client):
 
 def test_render_two_styles_reports_blend(app_client):
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
-        'style': (io.BytesIO(image_bytes('sketch.png')), 'sketch.png'),
-        'style2': (io.BytesIO(image_bytes('picasso_seated_nude_hr.jpg')), 'picasso.jpg'),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
+        'style': (io.BytesIO(image_bytes('pencil_sketch.jpg')), 'pencil_sketch.jpg'),
+        'style2': (io.BytesIO(image_bytes('blue_brushstrokes.jpg')), 'brushstrokes.jpg'),
         'alpha': '1.0', 'blend': '0.4',
     }, content_type='multipart/form-data')
     body = res.get_data(as_text=True)
@@ -235,8 +235,8 @@ def test_render_two_styles_reports_blend(app_client):
 
 def test_custom_title_appears_on_the_plate(app_client):
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
-        'style': (io.BytesIO(image_bytes('sketch.png')), 'sketch.png'),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
+        'style': (io.BytesIO(image_bytes('pencil_sketch.jpg')), 'pencil_sketch.jpg'),
         'alpha': '1.0', 'title': 'Portrait in Graphite',
     }, content_type='multipart/form-data')
     assert 'Portrait in Graphite' in res.get_data(as_text=True)
@@ -244,8 +244,8 @@ def test_custom_title_appears_on_the_plate(app_client):
 
 def test_title_is_escaped(app_client):
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
-        'style': (io.BytesIO(image_bytes('sketch.png')), 'sketch.png'),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
+        'style': (io.BytesIO(image_bytes('pencil_sketch.jpg')), 'pencil_sketch.jpg'),
         'alpha': '1.0', 'title': '<script>alert(1)</script>',
     }, content_type='multipart/form-data')
     body = res.get_data(as_text=True)
@@ -255,7 +255,7 @@ def test_title_is_escaped(app_client):
 
 def test_missing_content_is_reported(app_client):
     res = app_client.post('/', data={
-        'style': (io.BytesIO(image_bytes('sketch.png')), 'sketch.png'),
+        'style': (io.BytesIO(image_bytes('pencil_sketch.jpg')), 'pencil_sketch.jpg'),
         'alpha': '1.0',
     }, content_type='multipart/form-data')
     assert 'Please choose a content image.' in res.get_data(as_text=True)
@@ -263,7 +263,7 @@ def test_missing_content_is_reported(app_client):
 
 def test_missing_style_is_reported(app_client):
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
         'alpha': '1.0',
     }, content_type='multipart/form-data')
     assert 'Please choose at least one style image.' in res.get_data(as_text=True)
@@ -273,8 +273,8 @@ def test_missing_style_is_reported(app_client):
 def test_common_image_formats_are_accepted(app_client, filename):
     """Regression: these were silently dropped, clearing the preview and rendering nothing."""
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
-        'style': (io.BytesIO(image_bytes('sketch.png')), filename),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
+        'style': (io.BytesIO(image_bytes('pencil_sketch.jpg')), filename),
         'alpha': '1.0',
     }, content_type='multipart/form-data')
     body = res.get_data(as_text=True)
@@ -283,7 +283,7 @@ def test_common_image_formats_are_accepted(app_client, filename):
 
 def test_non_image_extension_is_rejected_with_a_reason(app_client):
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
         'style': (io.BytesIO(b'not an image'), 'notes.txt'),
         'alpha': '1.0',
     }, content_type='multipart/form-data')
@@ -294,7 +294,7 @@ def test_non_image_extension_is_rejected_with_a_reason(app_client):
 
 def test_corrupt_image_is_rejected_with_a_reason(app_client):
     res = app_client.post('/', data={
-        'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
+        'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
         'style': (io.BytesIO(b'\x00\x01\x02\x03'), 'broken.jpg'),
         'alpha': '1.0',
     }, content_type='multipart/form-data')
@@ -307,11 +307,11 @@ def test_results_do_not_collide(app_client):
     names = set()
     for _ in range(2):
         res = app_client.post('/', data={
-            'content': (io.BytesIO(image_bytes('brad_pitt.jpg')), 'brad_pitt.jpg'),
-            'style': (io.BytesIO(image_bytes('sketch.png')), 'sketch.png'),
+            'content': (io.BytesIO(image_bytes('portrait.jpg')), 'portrait.jpg'),
+            'style': (io.BytesIO(image_bytes('pencil_sketch.jpg')), 'pencil_sketch.jpg'),
             'alpha': '1.0',
         }, content_type='multipart/form-data')
-        found = re.search(r'stylized_\w+_brad_pitt\.jpg', res.get_data(as_text=True))
+        found = re.search(r'stylized_\w+_portrait\.jpg', res.get_data(as_text=True))
         assert found
         names.add(found.group(0))
     assert len(names) == 2
@@ -324,8 +324,8 @@ def test_full_pipeline_produces_a_valid_image(encoder, decoder, tmp_path):
     from torchvision import transforms
 
     tf = transforms.Compose([transforms.Resize(256), transforms.ToTensor()])
-    content = tf(Image.open(EXAMPLES / 'brad_pitt.jpg').convert('RGB')).unsqueeze(0)
-    style = tf(Image.open(EXAMPLES / 'sketch.png').convert('RGB')).unsqueeze(0)
+    content = tf(Image.open(EXAMPLES / 'portrait.jpg').convert('RGB')).unsqueeze(0)
+    style = tf(Image.open(EXAMPLES / 'pencil_sketch.jpg').convert('RGB')).unsqueeze(0)
 
     with torch.no_grad():
         t = adaptive_instance_normalization(encoder(content, is_test=True),
