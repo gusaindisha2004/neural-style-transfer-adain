@@ -231,18 +231,53 @@ For reference, the original paper reports 0.065 s at 512 px on a Pascal Titan X 
 
 ## Screenshots
 
-**Landing page**: method summary and model configuration
+Every section of the interface, in page order.
+
+### Landing
+
+The header states the method, the source paper, and the exact model configuration, so a
+visitor knows what they are looking at before scrolling.
 
 ![Landing page](docs/screenshot-landing.png)
 
-**Studio**: three upload slots with live previews, plus the style-blend and style-strength
-controls. The blend control is enabled only once a second style is chosen.
+### 01 Studio
 
-![Studio](docs/screenshot-studio.png)
+Three upload slots with live previews. Style B is optional, and the style-blend control stays
+disabled until a second style is chosen. Style strength and the result title are set here too.
 
-**Result**: the rendered output, labelled with the inputs and parameters used to produce it
+![Studio section](docs/screenshot-studio.png)
 
-![Result](docs/screenshot-result.png)
+### Result
+
+The rendered output, labelled with the inputs and the exact parameters that produced it, plus
+a download link.
+
+![Rendered result](docs/screenshot-result.png)
+
+### 02 Gallery
+
+Two worked examples, each pairing the same photograph with a different style. Neither style
+was seen during training.
+
+![Gallery section](docs/screenshot-gallery.png)
+
+### 03 Method
+
+The four stages of the pipeline, with the AdaIN equation.
+
+![Method section](docs/screenshot-method.png)
+
+### 04 Questions
+
+Answers to what the model is, what is pretrained, and what the runtime controls do.
+
+![Questions section](docs/screenshot-faq.png)
+
+### Footer
+
+Navigation and the four papers the implementation is based on.
+
+![Footer](docs/screenshot-footer.png)
 
 ## Installation
 
