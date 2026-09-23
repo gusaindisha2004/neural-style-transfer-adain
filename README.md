@@ -447,6 +447,9 @@ respective owners.
 
 **Disha Gusain**
 
+B.Tech in Artificial Intelligence and Machine Learning,
+Vivekananda Institute of Professional Studies
+
 - GitHub: [@gusaindisha2004](https://github.com/gusaindisha2004)
 
 Built as an independent implementation study of the AdaIN method, working from the original
